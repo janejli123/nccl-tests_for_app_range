@@ -18,6 +18,7 @@
 
 #include "util.h"
 #include "../verifiable/verifiable.h"
+#include "nvtx3/nvToolsExt.h" //Jane: added for ncu test
 
 #pragma weak ncclCommWindowRegister
 #pragma weak ncclCommWindowDeregister
@@ -580,6 +581,7 @@ testResult_t BenchTime(struct threadArgs* args, ncclDataType_t type, ncclRedOp_t
 
   // Performance Benchmark
   timer tim;
+  nvtxRangeId_t id1 = nvtxRangeStartA("RangeA"); //Jane: added for ncu tests
   for (int iter = 0; iter < iters; iter++) {
     if (agg_iters>1) NCCLCHECK(ncclGroupStart());
     for (int aiter = 0; aiter < agg_iters; aiter++) {
@@ -587,6 +589,7 @@ testResult_t BenchTime(struct threadArgs* args, ncclDataType_t type, ncclRedOp_t
     }
     if (agg_iters>1) NCCLCHECK(ncclGroupEnd());
   }
+  nvtxRangeEnd(id1); // Jane: added for ncu tests
 
 #if CUDART_VERSION >= 11030
   if (cudaGraphLaunches >= 1) {
