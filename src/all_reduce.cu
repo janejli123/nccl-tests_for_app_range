@@ -31,6 +31,8 @@
 constexpr int WARP_SIZE = 32;
 #endif
 
+#include "nvtx3/nvToolsExt.h" //Jane added for ncu tests
+
 void AllReduceGetCollByteCount(size_t *sendcount, size_t *recvcount, size_t *paramcount, size_t *sendInplaceOffset, size_t *recvInplaceOffset, size_t count, size_t eltSize, int nranks) {
   *sendcount = count;
   *recvcount = count;
@@ -489,6 +491,8 @@ testResult_t AllReduceRunColl(void* sendbuff, size_t sendoffset, void* recvbuff,
   char* sptr = (char*)sendbuff + sendoffset;
   char* rptr = (char*)recvbuff + recvoffset;
 
+  nvtxRangeId_t id = nvtxRangeStartA("RangeB"); //Jane added for ncu tests
+
   switch (deviceImpl) {
   case 0:
     NCCLCHECK(ncclAllReduce(sptr, rptr, count, type, op, comm, stream));
@@ -512,6 +516,8 @@ testResult_t AllReduceRunColl(void* sendbuff, size_t sendoffset, void* recvbuff,
     return testSuccess;
 #endif
   }
+
+  nvtxRangeEnd(id); //Jane added for ncu tests
 
   return testNotImplemented;
 }
